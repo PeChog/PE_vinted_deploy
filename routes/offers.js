@@ -64,49 +64,49 @@ router.post("/create/offer", isAuthenticated, async (req, res) => {
 
 router.get("/offers", async (req, res) => {
   try {
-  } catch (error) {}
-  const filtersObject = {};
-  if (req.query.title) {
-    filtersObject.product_name = RegExp(req.query.title, "i");
-  }
-
-  if (req.query.priceMin) {
-    filtersObject.product_price = { $gte: req.query.priceMin };
-  }
-
-  if (req.query.priceMax) {
-    if (filtersObject.product_price) {
-      filtersObject.product_price.$lte = req.query.priceMax;
-    } else {
-      filtersObject.product_price = {
-        $lte: req.query.priceMax,
-      };
+    const filtersObject = {};
+    if (req.query.title) {
+      filtersObject.product_name = RegExp(req.query.title, "i");
     }
-  }
-  const sortObject = {};
-  if (req.query.sort === "price-desc") {
-    sortObject.product_price = "desc";
-  } else if (req.query.sort === "price-asc") {
-    sortObject.product_price = "asc";
-  }
 
-  let limit = 3;
-  if (req.query.limit) {
-    limit = req.query.limit;
-  }
-  let page = 1;
-  if (req.query.page) {
-    page = req.query.page;
-  }
-  console.log(filtersObject);
-  const offers = await Offer.find(filtersObject)
-    .sort(sortObject)
-    .skip((page - 1) * limit)
-    .limit(limit)
-    .select("product_name product_price");
+    if (req.query.priceMin) {
+      filtersObject.product_price = { $gte: req.query.priceMin };
+    }
 
-  const count = await Offer.countDocuments(filtersObject);
-  res.json({ count: count, offers: offers });
+    if (req.query.priceMax) {
+      if (filtersObject.product_price) {
+        filtersObject.product_price.$lte = req.query.priceMax;
+      } else {
+        filtersObject.product_price = {
+          $lte: req.query.priceMax,
+        };
+      }
+    }
+    const sortObject = {};
+    if (req.query.sort === "price-desc") {
+      sortObject.product_price = "desc";
+    } else if (req.query.sort === "price-asc") {
+      sortObject.product_price = "asc";
+    }
+
+    let limit = 3;
+    if (req.query.limit) {
+      limit = req.query.limit;
+    }
+    let page = 1;
+    if (req.query.page) {
+      page = req.query.page;
+    }
+    console.log(filtersObject);
+    const offers = await Offer.find(filtersObject)
+      .sort(sortObject)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .select("product_name product_price");
+
+    const count = await Offer.countDocuments(filtersObject);
+    res.json({ count: count, offers: offers });
+  } catch (error) {}
 });
 
 router.get("/offer/:id", async (req, res) => {
