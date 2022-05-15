@@ -99,26 +99,18 @@ router.get("/offers", async (req, res) => {
     }
     console.log(filtersObject);
     const offers = await Offer.find(filtersObject)
+      .populate({
+        path: "owner",
+        select: "account",
+      })
       .sort(sortObject)
       .skip((page - 1) * limit)
       .limit(limit);
-    // .select("product_name product_price user");
+    // .select("product_name product_price user account");
 
     const count = await Offer.countDocuments(filtersObject);
     res.json({ count: count, offers: offers });
   } catch (error) {}
-});
-
-router.get("/offer/:id", async (req, res) => {
-  try {
-    const offer = await Offer.findById(req.params.id).populate({
-      path: "owner",
-      select: "account.username email -_id",
-    });
-    res.json(offer);
-  } catch (error) {
-    res.status(400).json(error.message);
-  }
 });
 
 module.exports = router;
